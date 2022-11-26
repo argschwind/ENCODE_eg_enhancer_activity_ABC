@@ -1,0 +1,10 @@
+
+# config file
+configfile: "config/config.yml"
+
+# workflow rules
+include: "rules/quantify_enhancer_activity.smk"
+
+rule all:
+  input:
+    expand("results/{sample}/chrom_abc_models.tsv.gz", sample = config["abc_predictions"])

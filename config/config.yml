@@ -1,0 +1,38 @@
+
+# ABC candidate region files
+abc_candidate_regions:
+  K562: "/oak/stanford/groups/akundaje/kmualim/02212022_hg38Preds_QNORM-avg_hic_track1/K562_ENCFF860XAE_ENCFF790GFL/Peaks/macs2_peaks.narrowPeak.sorted.candidateRegions.bed"
+  GM12878: "/oak/stanford/groups/akundaje/kmualim/02212022_hg38Preds_QNORM-avg_hic_track1/GM12878_ENCFF467CXY_ENCFF645BAL/Peaks/macs2_peaks.narrowPeak.sorted.candidateRegions.bed"
+  
+# ABC prediction files including Hi-C
+abc_predictions:
+  K562: "/oak/stanford/groups/akundaje/kmualim/02212022_hg38Preds_QNORM-avg_hic_track2/K562_ENCFF860XAE_ENCFF790GFL/Predictions/EnhancerPredictionsAllPutative.txt.gz"
+  GM12878: "/oak/stanford/groups/akundaje/kmualim/02212022_hg38Preds_QNORM-avg_hic_track2/GM12878_ENCFF467CXY_ENCFF645BAL/Predictions/EnhancerPredictionsAllPutative.txt.gz"
+  
+# chromatin assay urls
+chrom_assays:
+  K562:
+    H3K27ac: "https://www.encodeproject.org/files/ENCFF423WAK/@@download/ENCFF423WAK.bam"
+    H3K4me1: "https://www.encodeproject.org/files/ENCFF204MWI/@@download/ENCFF204MWI.bam"
+    H3K4me3: "https://www.encodeproject.org/files/ENCFF668LJP/@@download/ENCFF668LJP.bam"
+    H3K27me3: "https://www.encodeproject.org/files/ENCFF581EZD/@@download/ENCFF581EZD.bam"
+    H3K9me3: "https://www.encodeproject.org/files/ENCFF089CHU/@@download/ENCFF089CHU.bam"
+    H3K36me3: "https://www.encodeproject.org/files/ENCFF106UVL/@@download/ENCFF106UVL.bam"
+    CTCF: "https://www.encodeproject.org/files/ENCFF375XZP/@@download/ENCFF375XZP.bam"
+    EP300: "https://www.encodeproject.org/files/ENCFF163FSR/@@download/ENCFF163FSR.bam"
+    DNase: "https://www.encodeproject.org/files/ENCFF860XAE/@@download/ENCFF860XAE.bam"
+    ATAC: "https://www.encodeproject.org/files/ENCFF237LMR/@@download/ENCFF237LMR.bam"
+    sRNA: "https://www.encodeproject.org/files/ENCFF656GZF/@@download/ENCFF656GZF.bam"
+    GAGE: "https://www.encodeproject.org/files/ENCFF997CHB/@@download/ENCFF997CHB.bam"
+  GM12878:
+    H3K27ac: "https://www.encodeproject.org/files/ENCFF645BAL/@@download/ENCFF645BAL.bam"
+    H3K4me1: "https://www.encodeproject.org/files/ENCFF757IRH/@@download/ENCFF757IRH.bam"
+    H3K4me3: "https://www.encodeproject.org/files/ENCFF799DPR/@@download/ENCFF799DPR.bam"
+    H3K27me3: "https://www.encodeproject.org/files/ENCFF564GBJ/@@download/ENCFF564GBJ.bam"
+    H3K9me3: "https://www.encodeproject.org/files/ENCFF977WAU/@@download/ENCFF977WAU.bam"
+    H3K36me3: "https://www.encodeproject.org/files/ENCFF148NVT/@@download/ENCFF148NVT.bam"
+    CTCF: "https://www.encodeproject.org/files/ENCFF764YXZ/@@download/ENCFF764YXZ.bam"
+    EP300: "https://www.encodeproject.org/files/ENCFF349MFF/@@download/ENCFF349MFF.bam"
+    DNase: "https://www.encodeproject.org/files/ENCFF467CXY/@@download/ENCFF467CXY.bam"
+    # ATAC: "https://www.encodeproject.org/files/ENCFF144GBU/@@download/ENCFF144GBU.bam"
+    # eRNA: "https://www.encodeproject.org/files/ENCFF601VBE/@@download/ENCFF601VBE.bam"
