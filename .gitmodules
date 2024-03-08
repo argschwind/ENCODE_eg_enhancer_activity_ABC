@@ -1,4 +1,4 @@
 [submodule "workflow/ABC-Enhancer-Gene-Prediction"]
 	path = workflow/ABC-Enhancer-Gene-Prediction
 	url = https://github.com/broadinstitute/ABC-Enhancer-Gene-Prediction.git
-	branch = encode_v2
+	branch = main
