@@ -1,10 +1,19 @@
 
-# config file
+# main config file 
 configfile: "config/config.yml"
 
+# add files from ENCODE4 chromatin experiments to config
+configfile: "config/encode4_k562_chrom_data.yml"
+
 # workflow rules
-include: "rules/quantify_enhancer_activity.smk"
+include: "rules/encode_chromatin_abc_models.smk"
 
 rule all:
   input:
-    expand("results/{sample}/chrom_abc_models.tsv.gz", sample = config["abc_predictions"])
+    "results/bam/K562/assayOnly_abc_models_crispr.tsv.gz",
+    "results/bam/K562/assayDHS_abc_models_crispr.tsv.gz",
+    "results/bam/K562/EnhActABC_distal_reg_pred_config_bam.tsv",
+    "results/bigWig/K562/assayOnly_abc_models_crispr.tsv.gz",
+    "results/bigWig/K562/assayDHS_abc_models_crispr.tsv.gz",
+    "results/bigWig/K562/EnhActABC_distal_reg_pred_config_bigWig.tsv"
+
