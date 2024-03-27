@@ -32,7 +32,7 @@ seqlevels(abc_gr) <- seqlevels_all_pairs
 # end(crispr_gr) <- end(crispr_gr) + 1000
 
 # merge now overlapping enhancers
-crispr_gr <- reduce(crispr_gr)
+# crispr_gr <- reduce(crispr_gr)
 
 # find overlaps between ABC and CRISPR E-G pairs
 ovl <- findOverlaps(abc_gr, crispr_gr)

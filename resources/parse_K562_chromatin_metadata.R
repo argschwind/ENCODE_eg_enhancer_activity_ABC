@@ -81,10 +81,10 @@ bigwig_metadata <- bigwig_metadata %>%
 # Save processed metadata to output files ----------------------------------------------------------
 
 # save full processed metadata tables to file
-bam_metadata_file <- here("resources/processed_k562_chromatin_metadata_bam.tsv.gz")
+bam_metadata_file <- here("resources/processed_K562_chromatin_metadata_bam.tsv.gz")
 fwrite(bam_metadata, file = bam_metadata_file, sep = "\t", quote = FALSE, na = "NA")
 
-bigwig_metadata_file <- here("resources/processed_k562_chromatin_metadata_bigWig.tsv.gz")
+bigwig_metadata_file <- here("resources/processed_K562_chromatin_metadata_bigWig.tsv.gz")
 fwrite(bigwig_metadata, file = bigwig_metadata_file, sep = "\t", quote = FALSE, na = "NA")
 
 # Create yaml format files containing download URLs for each file ----------------------------------

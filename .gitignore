@@ -5,5 +5,3 @@
 *.Rproj
 .snakemake
 results
-slurm_logs
-resources/assays
