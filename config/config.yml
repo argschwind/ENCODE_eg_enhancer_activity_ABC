@@ -1,13 +1,13 @@
 
 # ABC candidate region files
 abc_candidate_regions:
-  K562: "/oak/stanford/groups/engreitz/Users/atan5133/abc_run_comparisons/current_ABC_results/K562_dhs_h3k27ac_intact_hic/Peaks/macs2_peaks.narrowPeak.sorted.candidateRegions.bed"
-#  GM12878: "/oak/stanford/groups/akundaje/kmualim/02212022_hg38Preds_QNORM-hic/GM12878_ID_2724/Neighborhoods/EnhancerList.txt"
+  K562: "/oak/stanford/groups/engreitz/Users/atan5133/encode_dataset_processing/results/dhs_only/K562_ENCSR000EOT/Peaks/macs2_peaks.narrowPeak.sorted.candidateRegions.bed"
+#  GM12878: "/oak/stanford/groups/engreitz/Users/atan5133/encode_dataset_processing/results/dhs_only/GM12878_ENCSR000EMT/Peaks/macs2_peaks.narrowPeak.sorted.candidateRegions.bed"
     
 # ABC prediction files including Hi-C
 abc_predictions:
-  K562: "/oak/stanford/groups/engreitz/Users/atan5133/abc_run_comparisons/current_ABC_results/K562_dhs_h3k27ac_intact_hic/Predictions/EnhancerPredictionsAllPutative.tsv.gz"
-#  GM12878: "/oak/stanford/groups/akundaje/kmualim/02212022_hg38Preds_QNORM-hic/GM12878_ID_2724/Predictions/EnhancerPredictionsAllPutative.txt.gz"
+  K562: "/oak/stanford/groups/engreitz/Users/atan5133/encode_dataset_processing/results/dhs_only/K562_ENCSR000EOT/Predictions/EnhancerPredictionsAllPutative.tsv.gz"
+#  GM12878: "/oak/stanford/groups/engreitz/Users/atan5133/encode_dataset_processing/results/dhs_only/GM12878_ENCSR000EMT/Predictions/EnhancerPredictionsAllPutative.tsv.gz"
 
 # TSS annotations
 genes: "workflow/ABC-Enhancer-Gene-Prediction/reference/hg38/CollapsedGeneBounds.hg38.TSS500bp.bed"

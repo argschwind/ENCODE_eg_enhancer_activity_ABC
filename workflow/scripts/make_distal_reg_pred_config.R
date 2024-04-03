@@ -20,7 +20,7 @@ distal_reg_config <- distal_reg_config[, 1:10]
 
 # extract full ABC, 3D contact and ENCODE-E2Gextended from distal regulation pred_config
 distal_reg_config <- distal_reg_config %>% 
-  filter(pred_id %in% c("ABCfull", "ENCODE_E2Gext", "HiC")) %>% 
+  filter(pred_id %in% c("ABCdnase", "ABCfull", "ENCODE_E2G", "ENCODE_E2Gext", "HiC")) %>% 
   mutate(pred_id = replace(pred_id, pred_id == "HiC", "ABCfull"),
          pred_col = replace(pred_col, pred_col == "hic_contact", "hic_contact_pl_scaled_adj"))
 
