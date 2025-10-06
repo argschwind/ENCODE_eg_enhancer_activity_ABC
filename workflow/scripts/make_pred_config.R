@@ -1,7 +1,4 @@
-## Create pred_config file for CRISPR benchmarking
-
-# save.image("pred.config.rda")
-# stop()
+## Create CRISPR benchamrking pred_config file for one model and file type combination
 
 # required packages
 suppressPackageStartupMessages({
@@ -14,6 +11,9 @@ pred <- fread(snakemake@input$pred)
   
 # load metadata for ENCODE chromatin data
 metadata <- fread(snakemake@input$metadata)
+
+# filter metadata for input cell type
+metadata <- filter(metadata, `Biosample term name` == snakemake@wildcards$cell_type)
 
 # extract all predictor score columns and create table
 pred_config <- grep(colnames(pred), pattern = ".Score", value = TRUE) %>%
@@ -30,7 +30,7 @@ pred_names <- metadata %>%
   select(pred_col, pred_name_long)
 
 # indicate in name if activity was computed by taking the geometric mean with DNase-seq
-if (snakemake@wildcards$type == "assayDHS") {
+if (snakemake@wildcards$pred_type == "assayDHS") {
   dhs <- snakemake@params$default_dnase
   pred_names$pred_name_long <- paste0("DHS (", dhs, ") x ", pred_names$pred_name_long)
 }
@@ -40,13 +40,13 @@ pred_config <- left_join(pred_config, pred_names, by = "pred_col")
 
 # add other required columns to create full pred_config file
 pred_config <- pred_config %>% 
-  mutate(pred_id = if_else(snakemake@wildcards$type == "assayOnly",
+  mutate(pred_id = if_else(snakemake@wildcards$pred_type == "assayOnly",
                            true = "EnhActAssayOnly",
                            false = "EnhActAssayDHS")) %>% 
   mutate(boolean = FALSE, alpha = NA, aggregate_function = "sum", fill_value = 0,
-         inverse_predictor = FALSE, color = "black", plot_crispr = FALSE) %>% 
+         inverse_predictor = FALSE, color = "black", plot = FALSE) %>% 
   select(pred_id, pred_col, boolean, alpha, aggregate_function, fill_value, inverse_predictor, 
-         pred_name_long, color, plot_crispr)
+         pred_name_long, color, plot)
 
 # save pred_config to output file
 write_tsv(pred_config, file = snakemake@output[[1]])

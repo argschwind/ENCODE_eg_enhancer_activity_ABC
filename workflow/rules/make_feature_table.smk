@@ -2,15 +2,15 @@
 # combine assay quantifications to create feature table for all ENCODE enhancer assays
 rule make_feature_table:
   input:
-    lambda wildcards: expand("{scratch}/enhancer_activity/{{cell_type}}/{{file_type}}/DNase-seq/{file}/EnhancerList.txt",
-           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["DNase-seq"]),
-    lambda wildcards: expand("{scratch}/enhancer_activity/{{cell_type}}/{{file_type}}/Histone_ChIP-seq/{file}/EnhancerList.txt",
-           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["Histone_ChIP-seq"]),
-    lambda wildcards: expand("{scratch}/enhancer_activity/{{cell_type}}/{{file_type}}/TF_ChIP-seq/{file}/EnhancerList.txt",
-           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["TF_ChIP-seq"]),
-    lambda wildcards: expand("{scratch}/enhancer_activity/{{cell_type}}/{{file_type}}/ATAC-seq/{file}/EnhancerList.txt",
-           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["ATAC-seq"]),
-    meta = "resources/processed_{cell_type}_chromatin_metadata_{file_type}.tsv.gz"
+    lambda wildcards: expand("{scratch}/enhancer_activity/ABC/{{cell_type}}/{{file_type}}/DNase-seq/{file}/EnhancerList.txt",
+           scratch = config["scratch"], file = config["assays"][wildcards.file_type][wildcards.cell_type]["DNase-seq"]),
+    lambda wildcards: expand("{scratch}/enhancer_activity/ABC/{{cell_type}}/{{file_type}}/Histone_ChIP-seq/{file}/EnhancerList.txt",
+           scratch = config["scratch"], file = config["assays"][wildcards.file_type][wildcards.cell_type]["Histone_ChIP-seq"]),
+    lambda wildcards: expand("{scratch}/enhancer_activity/ABC/{{cell_type}}/{{file_type}}/TF_ChIP-seq/{file}/EnhancerList.txt",
+           scratch = config["scratch"], file = config["assays"][wildcards.file_type][wildcards.cell_type]["TF_ChIP-seq"]),
+    lambda wildcards: expand("{scratch}/enhancer_activity/ABC/{{cell_type}}/{{file_type}}/ATAC-seq/{file}/EnhancerList.txt",
+           scratch = config["scratch"], file = config["assays"][wildcards.file_type][wildcards.cell_type]["ATAC-seq"]),
+    meta = "resources/processed_encode_chromatin_metadata_{file_type}.tsv.gz"
   output: temp("results/{file_type}/{cell_type}/enhancer_activity_features.tsv.gz")
   conda: "../envs/enhancer_activity.yml"
   resources:

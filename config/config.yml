@@ -1,24 +1,31 @@
 
 # ABC candidate region files
 abc_candidate_regions:
-  K562: "/oak/stanford/groups/engreitz/Users/atan5133/encode_dataset_processing/results/dhs_only/K562_ENCSR000EOT/Peaks/macs2_peaks.narrowPeak.sorted.candidateRegions.bed"
-#  GM12878: "/oak/stanford/groups/engreitz/Users/atan5133/encode_dataset_processing/results/dhs_only/GM12878_ENCSR000EMT/Peaks/macs2_peaks.narrowPeak.sorted.candidateRegions.bed"
+  K562: "/oak/stanford/groups/engreitz/Projects/Benchmarking/Revisions/Predictors/ABC/dnase_h3k27ac_intactHiC/K562/Peaks/macs2_peaks.narrowPeak.sorted.candidateRegions.bed"
+  GM12878: "/oak/stanford/groups/engreitz/Projects/Benchmarking/Revisions/Predictors/ABC/dnase_h3k27ac_intactHiC/GM12878/Peaks/macs2_peaks.narrowPeak.sorted.candidateRegions.bed"
     
 # ABC prediction files including Hi-C
 abc_predictions:
-  K562: "/oak/stanford/groups/engreitz/Users/atan5133/encode_dataset_processing/results/dhs_only/K562_ENCSR000EOT/Predictions/EnhancerPredictionsAllPutative.tsv.gz"
-#  GM12878: "/oak/stanford/groups/engreitz/Users/atan5133/encode_dataset_processing/results/dhs_only/GM12878_ENCSR000EMT/Predictions/EnhancerPredictionsAllPutative.tsv.gz"
+  K562: "/oak/stanford/groups/engreitz/Projects/Benchmarking/Revisions/Predictors/ABC/dnase_h3k27ac_intactHiC/K562/Predictions/EnhancerPredictionsAllPutative.tsv.gz"
+  GM12878: "/oak/stanford/groups/engreitz/Projects/Benchmarking/Revisions/Predictors/ABC/dnase_h3k27ac_intactHiC/GM12878/Predictions/EnhancerPredictionsAllPutative.tsv.gz"
 
-# TSS annotations
-genes: "workflow/ABC-Enhancer-Gene-Prediction/reference/hg38/CollapsedGeneBounds.hg38.TSS500bp.bed"
+# gene annotations
+genes: "workflow/ABC-Enhancer-Gene-Prediction/reference/hg38/CollapsedGeneBounds.hg38.bed"
   
 # combined CRISPR data for filtering of gene universe
 crispr_data: "/oak/stanford/groups/engreitz/Projects/Benchmarking/CRISPR_data/EPCrisprBenchmark_ensemble_data_GRCh38.tsv.gz"
 
-# default DNase-seq file accession (same as for K562 ABC)
+# distal regulation predictor config file
+distal_reg_pred_config: "/oak/stanford/groups/engreitz/Projects/Benchmarking/Revisions/Predictors/benchmarking_pred_config.tsv"
+
+# default DNase-seq file accession
 default_dnase:
-  bam: "ENCFF860XAE"
-  bigWig: "ENCFF338LXW"
+  K562:
+    bam: "ENCFF860XAE"
+    bigWig: "ENCFF338LXW"
+  GM12878:
+    bam: "ENCFF940NSD"
+    bigWig: "ENCFF960FMM"
 
 # directory on scratch for faster IO and temporary storage
 scratch: "/scratch/users/agschwin"

@@ -9,6 +9,9 @@ suppressPackageStartupMessages({
 # load ENCODE enhancer activity assay metadata
 meta <- fread(snakemake@input$meta, na.strings = "")
 
+# filter for used cell type
+meta <- filter(meta, `Biosample term name` == snakemake@wildcards$cell_type)
+
 # add column uniquely identifying the assay in each file
 meta <- meta %>% 
   mutate(assay_uid = if_else(is.na(`Experiment target`), true = Assay,

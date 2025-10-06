@@ -1,5 +1,20 @@
 ## Rules to build ABC variations using different chromatin assays to estimate activity
 
+# define python input functions
+def get_default_dnase_bam(wildcards):
+  dnase_id = config["default_dnase"][wildcards.cell_type]["bam"]
+  dnase_file = config["scratch"] + "/enhancer_activity/bam/" + wildcards.cell_type + "/DNase-seq/" + dnase_id + "/" + dnase_id + ".sorted.bam"
+  return(dnase_file)
+
+def get_default_dnase_bam_bai(wildcards):
+  dnase_id = config["default_dnase"][wildcards.cell_type]["bam"]
+  dnase_file = config["scratch"] + "/enhancer_activity/bam/" + wildcards.cell_type + "/DNase-seq/" + dnase_id + "/" + dnase_id + ".sorted.bam.bai"
+  return(dnase_file)
+
+def get_default_dnase_bigwig(wildcards):
+  dnase_id = config["default_dnase"][wildcards.cell_type]["bigWig"]
+  dnase_file = config["scratch"] + "/enhancer_activity/bigWig/" + wildcards.cell_type + "/DNase-seq/" + dnase_id + "/" + dnase_id + ".bigWig"
+  return(dnase_file)
 
 # Prepare input files ------------------------------------------------------------------------------
 
@@ -29,9 +44,9 @@ rule filter_abc_crispr:
 
 # download chromatin assay bam of bigWig files
 rule download_assay_data:
-  output: temp(config["scratch"] + "/enhancer_activity/{ext}/{assay}/{file}/{file}.{ext}")
+  output: temp(config["scratch"] + "/enhancer_activity/{ext}/{cell_type}/{assay}/{file}/{file}.{ext}")
   params:
-    url = lambda wildcards: config["assays"][wildcards.ext][wildcards.assay][wildcards.file]
+    url = lambda wildcards: config["assays"][wildcards.ext][wildcards.cell_type][wildcards.assay][wildcards.file]
   wildcard_constraints:
     ext="bam|bigWig"
   conda: "../envs/enhancer_activity.yml"
@@ -40,10 +55,10 @@ rule download_assay_data:
     
 # sort and index bam files
 rule sort_bam:
-  input: config["scratch"] + "/enhancer_activity/bam/{assay}/{file}/{file}.bam"
+  input: config["scratch"] + "/enhancer_activity/bam/{cell_type}/{assay}/{file}/{file}.bam"
   output:
-    bam = temp(config["scratch"] + "/enhancer_activity/bam/{assay}/{file}/{file}.sorted.bam"),
-    bai = temp(config["scratch"] + "/enhancer_activity/bam/{assay}/{file}/{file}.sorted.bam.bai")
+    bam = temp(config["scratch"] + "/enhancer_activity/bam/{cell_type}/{assay}/{file}/{file}.sorted.bam"),
+    bai = temp(config["scratch"] + "/enhancer_activity/bam/{cell_type}/{assay}/{file}/{file}.sorted.bam.bai")
   conda: "../envs/enhancer_activity.yml"
   resources:
     mem = "32G",
@@ -58,17 +73,17 @@ rule sort_bam:
 rule run_neighborhoods_bam:
   input:
     candidate_regions = lambda wildcards: config["abc_candidate_regions"][wildcards.cell_type],
-    access_bam = config["scratch"] + "/enhancer_activity/bam/DNase-seq/" + config["default_dnase"]["bam"] + "/" + config["default_dnase"]["bam"] + ".sorted.bam",
-    access_bai = config["scratch"] + "/enhancer_activity/bam/DNase-seq/" + config["default_dnase"]["bam"] + "/" + config["default_dnase"]["bam"] + ".sorted.bam.bai",
-    activity_bam = config["scratch"] + "/enhancer_activity/bam/{assay}/{file}/{file}.sorted.bam",
-    activity_bai = config["scratch"] + "/enhancer_activity/bam/{assay}/{file}/{file}.sorted.bam.bai",
+    access_bam = get_default_dnase_bam,
+    access_bai = get_default_dnase_bam_bai,
+    activity_bam = config["scratch"] + "/enhancer_activity/bam/{cell_type}/{assay}/{file}/{file}.sorted.bam",
+    activity_bai = config["scratch"] + "/enhancer_activity/bam/{cell_type}/{assay}/{file}/{file}.sorted.bam.bai",
     genes = config["genes"],
     chrs = "workflow/ABC-Enhancer-Gene-Prediction/reference/hg38/GRCh38_EBV.no_alt.chrom.sizes.tsv",
     chrs_bed = "resources/GRCh38_EBV.no_alt.chrom.sizes.bed",
     ubiq_genes = "workflow/ABC-Enhancer-Gene-Prediction/reference/UbiquitouslyExpressedGenes.txt"
-  output: config["scratch"] + "/enhancer_activity/{cell_type}/bam/{assay}/{file}/EnhancerList.txt"
+  output: config["scratch"] + "/enhancer_activity/ABC/{cell_type}/bam/{assay}/{file}/EnhancerList.txt"
   params:
-    outdir = config["scratch"] + "/enhancer_activity/{cell_type}/bam/{assay}/{file}"
+    outdir = config["scratch"] + "/enhancer_activity/ABC/{cell_type}/bam/{assay}/{file}"
   conda: "../ABC-Enhancer-Gene-Prediction/workflow/envs/abcenv.yml"
   resources:
     mem = "32G",
@@ -89,15 +104,15 @@ rule run_neighborhoods_bam:
 rule run_neighborhoods_bigwig:
   input:
     candidate_regions = lambda wildcards: config["abc_candidate_regions"][wildcards.cell_type],
-    access_bigwig = config["scratch"] + "/enhancer_activity/bigWig/DNase-seq/" + config["default_dnase"]["bigWig"] + "/" + config["default_dnase"]["bigWig"] + ".bigWig",
-    activity_bigwig = config["scratch"] + "/enhancer_activity/bigWig/{assay}/{file}/{file}.bigWig",
+    access_bigwig = get_default_dnase_bigwig,
+    activity_bigwig = config["scratch"] + "/enhancer_activity/bigWig/{cell_type}/{assay}/{file}/{file}.bigWig",
     genes = config["genes"],
     chrs = "workflow/ABC-Enhancer-Gene-Prediction/reference/hg38/GRCh38_EBV.no_alt.chrom.sizes.tsv",
     chrs_bed = "resources/GRCh38_EBV.no_alt.chrom.sizes.bed",
     ubiq_genes = "workflow/ABC-Enhancer-Gene-Prediction/reference/UbiquitouslyExpressedGenes.txt"
-  output: config["scratch"] + "/enhancer_activity/{cell_type}/bigWig/{assay}/{file}/EnhancerList.txt"
+  output: config["scratch"] + "/enhancer_activity/ABC/{cell_type}/bigWig/{assay}/{file}/EnhancerList.txt"
   params:
-    outdir = config["scratch"] + "/enhancer_activity/{cell_type}/bigWig/{assay}/{file}"
+    outdir = config["scratch"] + "/enhancer_activity/ABC/{cell_type}/bigWig/{assay}/{file}"
   conda: "../ABC-Enhancer-Gene-Prediction/workflow/envs/abcenv.yml"
   resources:
     mem = "32G",
@@ -117,12 +132,12 @@ rule run_neighborhoods_bigwig:
 # compute ABC scores using different enhancer activity assays
 rule compute_abc_scores:
   input:
-    quants = config["scratch"] + "/enhancer_activity/K562/{file_type}/{assay}/{file}/EnhancerList.txt",
+    quants = config["scratch"] + "/enhancer_activity/ABC/K562/{file_type}/{assay}/{file}/EnhancerList.txt",
     abc = config["abc_predictions"]["K562"],
     abc_crispr = "resources/K562_ABC_predictions.CRISPR_only.tsv.gz"
   output: 
-    abc_scores_full = config["scratch"] + "/enhancer_activity/K562/{file_type}/{assay}/{file}/{type}_abc_scores_full.txt",
-    abc_scores_crispr = config["scratch"] + "/enhancer_activity/K562/{file_type}/{assay}/{file}/{type}_abc_scores_crispr.txt"
+    abc_scores_full = config["scratch"] + "/enhancer_activity/ABC/K562/{file_type}/{assay}/{file}/{type}_abc_scores_full.txt",
+    abc_scores_crispr = config["scratch"] + "/enhancer_activity/ABC/K562/{file_type}/{assay}/{file}/{type}_abc_scores_crispr.txt"
   conda: "../envs/enhancer_activity.yml"
   resources:
     mem = "8G"
@@ -132,14 +147,14 @@ rule compute_abc_scores:
 # combine enhancer activity ABC scores into one table
 rule combine_abc_scores:
   input:
-    lambda wildcards: expand("{scratch}/enhancer_activity/K562/{{file_type}}/DNase-seq/{file}/{{type}}_abc_scores_{{univ}}.txt",
-           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["DNase-seq"]),
-    lambda wildcards: expand("{scratch}/enhancer_activity/K562/{{file_type}}/Histone_ChIP-seq/{file}/{{type}}_abc_scores_{{univ}}.txt",
-           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["Histone_ChIP-seq"]),
-    lambda wildcards: expand("{scratch}/enhancer_activity/K562/{{file_type}}/TF_ChIP-seq/{file}/{{type}}_abc_scores_{{univ}}.txt",
-           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["TF_ChIP-seq"]),
-    lambda wildcards: expand("{scratch}/enhancer_activity/K562/{{file_type}}/ATAC-seq/{file}/{{type}}_abc_scores_{{univ}}.txt",
-           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["ATAC-seq"])
+    lambda wildcards: expand("{scratch}/enhancer_activity/ABC/K562/{{file_type}}/DNase-seq/{file}/{{type}}_abc_scores_{{univ}}.txt",
+           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["K562"]["DNase-seq"]),
+    lambda wildcards: expand("{scratch}/enhancer_activity/ABC/K562/{{file_type}}/Histone_ChIP-seq/{file}/{{type}}_abc_scores_{{univ}}.txt",
+           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["K562"]["Histone_ChIP-seq"]),
+    lambda wildcards: expand("{scratch}/enhancer_activity/ABC/K562/{{file_type}}/TF_ChIP-seq/{file}/{{type}}_abc_scores_{{univ}}.txt",
+           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["K562"]["TF_ChIP-seq"]),
+    lambda wildcards: expand("{scratch}/enhancer_activity/ABC/K562/{{file_type}}/ATAC-seq/{file}/{{type}}_abc_scores_{{univ}}.txt",
+           scratch = config["scratch"], file = config["assays"][wildcards.file_type]["K562"]["ATAC-seq"])
   output: temp("results/{file_type}/K562/{type}_abc_scores_{univ}.tsv.gz")
   conda: "../envs/enhancer_activity.yml"
   shell:
@@ -161,13 +176,13 @@ rule assemble_abc_predictions:
 # create pred_config file for CRISPR benchmarking
 rule make_pred_config:
   input:
-    pred = "results/{file_type}/K562/{type}_abc_models_crispr.tsv.gz",
-    metadata = "resources/processed_K562_chromatin_metadata_{file_type}.tsv.gz",
-  output: temp("results/{file_type}/K562/{type}_pred_config.tsv")
+    pred = "results/{file_type}/{cell_type}/{pred_type}_abc_models_crispr.tsv.gz",
+    metadata = "resources/processed_encode_chromatin_metadata_{file_type}.tsv.gz",
+  output: temp("results/{file_type}/{cell_type}/{pred_type}_pred_config.tsv")
   wildcard_constraints:
-    type = "assayOnly|assayDHS"
+    pred_type = "assayOnly|assayDHS"
   params:
-    default_dnase = lambda wildcards: config["default_dnase"][wildcards.file_type]
+    default_dnase = lambda wildcards: config["default_dnase"][wildcards.cell_type][wildcards.file_type]
   conda: "../envs/enhancer_activity.yml"
   script:
     "../scripts/make_pred_config.R"
@@ -177,7 +192,7 @@ rule make_distal_reg_pred_config:
   input:
     pred_config_assayOnly = "results/{file_type}/K562/assayOnly_pred_config.tsv",
     pred_config_assayDHS = "results/{file_type}/K562/assayDHS_pred_config.tsv",
-    pred_config = "/oak/stanford/groups/engreitz/Projects/Benchmarking/Predictors/benchmarking_pred_config.tsv"
+    pred_config = config["distal_reg_pred_config"]
   output: "results/{file_type}/K562/EnhActABC_distal_reg_pred_config_{file_type}.tsv"
   conda: "../envs/enhancer_activity.yml"
   script:

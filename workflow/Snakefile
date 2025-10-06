@@ -3,7 +3,7 @@
 configfile: "config/config.yml"
 
 # add files from ENCODE4 chromatin experiments to config
-configfile: "config/encode4_k562_chrom_data.yml"
+configfile: "config/encode4_chromatin_data.yml"
 
 # workflow rules
 include: "rules/encode_chromatin_abc_models.smk"
@@ -14,6 +14,6 @@ rule all:
     expand("results/{file_type}/K562/{abc_type}_abc_models_crispr.tsv.gz",
       file_type = ["bam", "bigWig"], abc_type = ["assayOnly", "assayDHS"]),
     expand("results/bigWig/{cell_type}/EnhAct_features_ABC_egPairs.tsv.gz",
-      cell_type = ["K562"]),
+      cell_type = ["K562", "GM12878"]),
     "results/bigWig/K562/EnhActABC_distal_reg_pred_config_bigWig.tsv",
-    "results/bam/K562/EnhActABC_distal_reg_pred_config_bam.tsv",
+    "results/bam/K562/EnhActABC_distal_reg_pred_config_bam.tsv"

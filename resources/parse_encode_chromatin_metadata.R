@@ -1,6 +1,6 @@
-## Query the ENCODE portal for K562 chromatin data, download results as metadata table and filter
-## to obtain one bam file per filtered experiment. Save processed metadata to table and create .yaml
-## file containing download URLs for each file to load into snakemake config object.
+## Query the ENCODE portal for K562 and GM12878 chromatin data, download results as metadata table
+## and filter to obtain one bam file per filtered experiment. Save processed metadata to table and
+## create .yaml file containing download URLs for each file to load into snakemake config object.
 
 # required packages
 library(data.table)
@@ -13,7 +13,7 @@ library(yaml)
 # elements of metadata search URL
 base = "https://www.encodeproject.org/metadata/?"
 dataset_type = "type=Experiment&control_type%21=%2A&status=released&perturbed=false"
-biosample = "biosample_ontology.term_name=K562"
+biosample = "biosample_ontology.term_name=K562&biosample_ontology.term_name=GM12878"
 assays = c("TF+ChIP-seq", "Histone+ChIP-seq", "ATAC-seq", "DNase-seq")
 genome = "assembly=GRCh38"
 released = "files.analyses.status=released"
@@ -50,9 +50,12 @@ run_type <- fastq_metadata %>%
   select(`Experiment accession`, `Run type`) %>% 
   distinct()
 
-# for one specific experiment, remove wrong type TODO: FIX THIS USING 'DERIVED FROM'
+# if one experiment has both single-ended and paired-ended reads, select single-ended to use
+# unfiltered alignments
 run_type <- run_type %>% 
-  filter(!(`Experiment accession` == "ENCSR668LDD" & `Run type` == "paired-ended"))
+  mutate(`Run type` = factor(`Run type`, levels = c("single-ended", "paired-ended"))) %>% 
+  group_by(`Experiment accession`) %>% 
+  slice_min(order_by = `Run type`)
 
 # add Run type to bam metadata files
 bam_metadata <- bam_metadata %>% 
@@ -71,20 +74,20 @@ bam_metadata <- bam_metadata %>%
 
 # if there are two experiments per target, pick the newer experiment or all if all have same date
 bam_metadata <- bam_metadata %>%
-  group_by(Assay, `Experiment target`) %>%
+  group_by(`Biosample term name`, Assay, `Experiment target`) %>%
   slice_max(`Experiment date released`, n = 1)
 
 bigwig_metadata <- bigwig_metadata %>%
-  group_by(Assay, `Experiment target`) %>%
+  group_by(`Biosample term name`, Assay, `Experiment target`) %>%
   slice_max(`Experiment date released`, n = 1)
 
 # Save processed metadata to output files ----------------------------------------------------------
 
 # save full processed metadata tables to file
-bam_metadata_file <- here("resources/processed_K562_chromatin_metadata_bam.tsv.gz")
+bam_metadata_file <- here("resources/processed_encode_chromatin_metadata_bam.tsv.gz")
 fwrite(bam_metadata, file = bam_metadata_file, sep = "\t", quote = FALSE, na = "NA")
 
-bigwig_metadata_file <- here("resources/processed_K562_chromatin_metadata_bigWig.tsv.gz")
+bigwig_metadata_file <- here("resources/processed_encode_chromatin_metadata_bigWig.tsv.gz")
 fwrite(bigwig_metadata, file = bigwig_metadata_file, sep = "\t", quote = FALSE, na = "NA")
 
 # Create yaml format files containing download URLs for each file ----------------------------------
@@ -92,29 +95,35 @@ fwrite(bigwig_metadata, file = bigwig_metadata_file, sep = "\t", quote = FALSE, 
 # get file download URLs for each experiment in processed bam metadata
 bam_sample_urls <- bam_metadata %>%
   ungroup() %>%
-  select(Assay, `File accession`, `File download URL`) %>% 
+  select(`Biosample term name`, Assay, `File accession`, `File download URL`) %>% 
   mutate(Assay = gsub(" ", "_", Assay))  # replace spaces by underscores for simpler file paths
 
 # get file download URLs for each experiment in processed bigWig metadata
 bigwig_sample_urls <- bigwig_metadata %>%
   ungroup() %>%
-  select(Assay, `File accession`, `File download URL`) %>% 
+  select(`Biosample term name`, Assay, `File accession`, `File download URL`) %>% 
   mutate(Assay = gsub(" ", "_", Assay))  # replace spaces by underscores for simpler file paths
 
 # convert to list of lists, containing download URLs for each file per assay
 bam_sample_urls <- bam_sample_urls %>%
   as.data.table() %>%
-  split(., by = "Assay", keep.by = FALSE) %>%
-  lapply(., FUN = function(x) as.list(deframe(x)) )
+  split(., by = "Biosample term name", keep.by = FALSE) %>% 
+  lapply(., FUN = function(i) {
+    i <- split(i, by = "Assay", keep.by = FALSE)
+    lapply(i, FUN = function(j) as.list(deframe(j)))
+  })
 
 # convert to list of lists, containing download URLs for each file per assay
 bigwig_sample_urls <- bigwig_sample_urls %>%
   as.data.table() %>%
-  split(., by = "Assay", keep.by = FALSE) %>%
-  lapply(., FUN = function(x) as.list(deframe(x)) )
+  split(., by = "Biosample term name", keep.by = FALSE) %>% 
+  lapply(., FUN = function(i) {
+    i <- split(i, by = "Assay", keep.by = FALSE)
+    lapply(i, FUN = function(j) as.list(deframe(j)))
+  })
 
 # combine into one list of lists
 sample_urls <- list(assays = list(bam = bam_sample_urls, bigWig = bigwig_sample_urls))
 
 # create yaml files with download urls per experiment to add to snakemake workflow
-write_yaml(sample_urls, file = here("config/encode4_k562_chrom_data.yml"))
+write_yaml(sample_urls, file = here("config/encode4_chromatin_data.yml"))
