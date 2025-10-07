@@ -27,6 +27,15 @@ rule create_chrom_sizes_bed_file:
 		awk 'BEGIN {{OFS="\t"}} {{if (NF > 0) print $1,"0",$2 ; else print $0}}' {input} > {output}
 		"""
 
+# download specified CRISPR data
+rule download_crispr:
+  output: "resources/EPCrisprBenchmark_combined_data.training_K562.GRCh38.tsv.gz"
+  params:
+    url = config["crispr_url"]
+  conda: "../envs/enhancer_activity.yml"
+  shell:
+    "wget -O {output} {params.url}"
+
 # filter ABC predictions for E-G pairs overlapping CRISPR E-G pairs
 rule filter_abc_crispr:
   input:
@@ -132,12 +141,12 @@ rule run_neighborhoods_bigwig:
 # compute ABC scores using different enhancer activity assays
 rule compute_abc_scores:
   input:
-    quants = config["scratch"] + "/enhancer_activity/ABC/K562/{file_type}/{assay}/{file}/EnhancerList.txt",
-    abc = config["abc_predictions"]["K562"],
-    abc_crispr = "resources/K562_ABC_predictions.CRISPR_only.tsv.gz"
+    quants = config["scratch"] + "/enhancer_activity/ABC/{cell_type}/{file_type}/{assay}/{file}/EnhancerList.txt",
+    abc = lambda wildcards: config["abc_predictions"][wildcards.cell_type],
+    abc_crispr = "resources/{cell_type}_ABC_predictions.CRISPR_only.tsv.gz"
   output: 
-    abc_scores_full = config["scratch"] + "/enhancer_activity/ABC/K562/{file_type}/{assay}/{file}/{type}_abc_scores_full.txt",
-    abc_scores_crispr = config["scratch"] + "/enhancer_activity/ABC/K562/{file_type}/{assay}/{file}/{type}_abc_scores_crispr.txt"
+    abc_scores_full = config["scratch"] + "/enhancer_activity/ABC/{cell_type}/{file_type}/{assay}/{file}/{type}_abc_scores_full.txt",
+    abc_scores_crispr = config["scratch"] + "/enhancer_activity/ABC/{cell_type}/{file_type}/{assay}/{file}/{type}_abc_scores_crispr.txt"
   conda: "../envs/enhancer_activity.yml"
   resources:
     mem = "8G"
@@ -161,15 +170,26 @@ rule combine_abc_scores:
     "paste {input} | gzip > {output}"
     
 # combine CRISPR ABC scores with E-G pairs to create predictions in ENCODE4 format
-rule assemble_abc_predictions:
+rule assemble_abc_predictions_crispr:
   input:
-    abc = "resources/K562_ABC_predictions.CRISPR_only.tsv.gz",
-    abc_scores = "results/{file_type}/K562/{type}_abc_scores_crispr.tsv.gz"
-  output: "results/{file_type}/K562/{type}_abc_models_crispr.tsv.gz"
+    abc = "resources/{cell_type}_ABC_predictions.CRISPR_only.tsv.gz",
+    abc_scores = "results/{file_type}/{cell_type}/{type}_abc_scores_crispr.tsv.gz"
+  output: "results/{file_type}/{cell_type}/{type}_abc_models_crispr.tsv.gz"
   conda: "../envs/enhancer_activity.yml"
   script:
     "../scripts/assemble_abc_predictions.R"
-    
+
+# combine genome-wide ABC scores with E-G pairs to create predictions in ENCODE4 format
+rule assemble_abc_predictions_full:
+  input:
+    abc = lambda wildcards: config["abc_predictions"][wildcards.cell_type],
+    abc_scores = "results/{file_type}/{cell_type}/{type}_abc_scores_full.tsv.gz"
+  output: "results/{file_type}/{cell_type}/{type}_abc_models_full.tsv.gz"
+  conda: "../envs/enhancer_activity.yml"
+  resources:
+    mem = "48G"
+  script:
+    "../scripts/assemble_abc_predictions.R"    
 
 # Create config files for CRISPR benchmarking ------------------------------------------------------
     

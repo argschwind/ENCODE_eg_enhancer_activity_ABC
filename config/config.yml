@@ -12,11 +12,12 @@ abc_predictions:
 # gene annotations
 genes: "workflow/ABC-Enhancer-Gene-Prediction/reference/hg38/CollapsedGeneBounds.hg38.bed"
   
-# combined CRISPR data for filtering of gene universe
-crispr_data: "/oak/stanford/groups/engreitz/Projects/Benchmarking/CRISPR_data/EPCrisprBenchmark_ensemble_data_GRCh38.tsv.gz"
+# combined CRISPR data for filtering of ABC predictions
+crispr_url: "https://github.com/EngreitzLab/CRISPR_comparison/raw/refs/heads/main/resources/crispr_data/EPCrisprBenchmark_combined_data.training_K562.GRCh38.tsv.gz"
+crispr_data: "resources/EPCrisprBenchmark_combined_data.training_K562.GRCh38.tsv.gz"
 
 # distal regulation predictor config file
-distal_reg_pred_config: "/oak/stanford/groups/engreitz/Projects/Benchmarking/Revisions/Predictors/benchmarking_pred_config.tsv"
+distal_reg_pred_config: "resources/benchmarking_pred_config.tsv"
 
 # default DNase-seq file accession
 default_dnase:
